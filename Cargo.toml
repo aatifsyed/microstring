@@ -3,4 +3,26 @@ name = "microstring"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+alloc = []
+std = ["alloc"]
+
+zerocopy = ["dep:zerocopy"]
+serde = ["dep:serde"]
+schemars = ["dep:schemars", "std"]
+
 [dependencies]
+arbitrary = { version = "1.4.2", optional = true }
+schemars = { version = "1.0.4", optional = true, default-features = false }
+serde = { version = "1.0.219", default-features = false, optional = true }
+zerocopy = { version = "0.8.27", optional = true, features = ["derive"] }
+
+[dev-dependencies]
+expect-test = "1.5.1"
+prettyplease = "0.2.37"
+proc-macro2 = { version = "1.0.101", default-features = false }
+quote = { version = "1.0.40", default-features = false }
+syn = { version = "2.0.106", default-features = false, features = [
+    "parsing",
+    "printing",
+] }
