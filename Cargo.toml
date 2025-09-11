@@ -2,6 +2,18 @@
 name = "microstring"
 version = "0.1.0"
 edition = "2024"
+description = "Small, niche-able, stack allocated strings"
+categories = [
+    "rust-patterns",
+    "no-std::no-alloc",
+    "no-std",
+    "memory-management",
+    "data-structures",
+]
+license = "Apache-2.0 OR MIT"
+homepage = "https://crates.io/crates/microstring"
+documentation = "https://docs.rs/microstring"
+repository = "https://github.com/aatifsyed/microstring"
 
 [features]
 alloc = []
