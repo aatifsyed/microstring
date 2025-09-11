@@ -1,14 +1,18 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! Small, niche-able, stack allocated strings
+//!
+//! ```
+//! # use microstring::*;
+//! # use std::mem::size_of;
+//! assert_eq! {
+//!     size_of::<NanoString>(),
+//!     size_of::<Option<NanoString>>(),
+//! }
+//! ```
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#![no_std]
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+#[cfg(feature = "std")]
+extern crate std;
+
+mod generated;
+pub use generated::*;
