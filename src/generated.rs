@@ -11,7 +11,7 @@ pub struct NanoString {
     bytes: [u8; 3u8 as _],
 }
 impl NanoString {
-    const DEFAULT: Self = Self::new("").unwrap();
+    pub const EMPTY: Self = Self::new("").unwrap();
     pub const fn new(s: &str) -> Option<Self> {
         match NanoStringLen::from_usize(s.len()) {
             Some(len) => {
@@ -59,12 +59,12 @@ impl ::core::fmt::Display for NanoStringError {
 impl ::core::error::Error for NanoStringError {}
 impl ::core::default::Default for NanoString {
     fn default() -> Self {
-        Self::DEFAULT
+        Self::EMPTY
     }
 }
 impl ::core::default::Default for &NanoString {
     fn default() -> Self {
-        &NanoString::DEFAULT
+        &NanoString::EMPTY
     }
 }
 impl ::core::hash::Hash for NanoString {
@@ -207,6 +207,10 @@ impl schemars::JsonSchema for NanoString {
         )
     }
 }
+#[cfg(feature = "const-default")]
+impl const_default::ConstDefault for NanoString {
+    const DEFAULT: Self = NanoString::EMPTY;
+}
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
 #[cfg_attr(
@@ -249,7 +253,7 @@ pub struct MicroString {
     bytes: [u8; 7u8 as _],
 }
 impl MicroString {
-    const DEFAULT: Self = Self::new("").unwrap();
+    pub const EMPTY: Self = Self::new("").unwrap();
     pub const fn new(s: &str) -> Option<Self> {
         match MicroStringLen::from_usize(s.len()) {
             Some(len) => {
@@ -297,12 +301,12 @@ impl ::core::fmt::Display for MicroStringError {
 impl ::core::error::Error for MicroStringError {}
 impl ::core::default::Default for MicroString {
     fn default() -> Self {
-        Self::DEFAULT
+        Self::EMPTY
     }
 }
 impl ::core::default::Default for &MicroString {
     fn default() -> Self {
-        &MicroString::DEFAULT
+        &MicroString::EMPTY
     }
 }
 impl ::core::hash::Hash for MicroString {
@@ -447,6 +451,10 @@ impl schemars::JsonSchema for MicroString {
         )
     }
 }
+#[cfg(feature = "const-default")]
+impl const_default::ConstDefault for MicroString {
+    const DEFAULT: Self = MicroString::EMPTY;
+}
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
 #[cfg_attr(
@@ -497,7 +505,7 @@ pub struct MilliString {
     bytes: [u8; 15u8 as _],
 }
 impl MilliString {
-    const DEFAULT: Self = Self::new("").unwrap();
+    pub const EMPTY: Self = Self::new("").unwrap();
     pub const fn new(s: &str) -> Option<Self> {
         match MilliStringLen::from_usize(s.len()) {
             Some(len) => {
@@ -545,12 +553,12 @@ impl ::core::fmt::Display for MilliStringError {
 impl ::core::error::Error for MilliStringError {}
 impl ::core::default::Default for MilliString {
     fn default() -> Self {
-        Self::DEFAULT
+        Self::EMPTY
     }
 }
 impl ::core::default::Default for &MilliString {
     fn default() -> Self {
-        &MilliString::DEFAULT
+        &MilliString::EMPTY
     }
 }
 impl ::core::hash::Hash for MilliString {
@@ -694,6 +702,10 @@ impl schemars::JsonSchema for MilliString {
             ),
         )
     }
+}
+#[cfg(feature = "const-default")]
+impl const_default::ConstDefault for MilliString {
+    const DEFAULT: Self = MilliString::EMPTY;
 }
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]

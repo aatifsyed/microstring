@@ -36,7 +36,7 @@ fn string(ident: &Ident, n: u8) -> TokenStream {
             bytes: [u8; #n as _]
         }
         impl #ident {
-            const DEFAULT: Self = Self::new("").unwrap();
+            pub const EMPTY: Self = Self::new("").unwrap();
 
             pub const fn new(s: &str) -> Option<Self> {
                 match #len_ident::from_usize(s.len()) {
@@ -88,12 +88,12 @@ fn string(ident: &Ident, n: u8) -> TokenStream {
 
         impl ::core::default::Default for #ident {
             fn default() -> Self {
-                Self::DEFAULT
+                Self::EMPTY
             }
         }
         impl ::core::default::Default for &#ident {
             fn default() -> Self {
-                &#ident::DEFAULT
+                &#ident::EMPTY
             }
         }
 
@@ -273,6 +273,13 @@ fn string(ident: &Ident, n: u8) -> TokenStream {
                     ::core::stringify!(#ident)
                 ))
             }
+        }
+
+        // const_default
+
+        #[cfg(feature = "const-default")]
+        impl const_default::ConstDefault for #ident {
+            const DEFAULT: Self = #ident::EMPTY;
         }
 
         // len
