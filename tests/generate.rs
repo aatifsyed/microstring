@@ -4,9 +4,15 @@ use syn::parse_quote;
 
 #[test]
 fn test() {
-    let nano = string(&parse_quote!(NanoString), 3);
-    let micro = string(&parse_quote!(MicroString), 7);
-    let milli = string(&parse_quote!(MilliString), 15);
+    let nano = string(&parse_quote!(NanoString), 3, "u32", "GBP", "GEEBEEPEE");
+    let micro = string(&parse_quote!(MicroString), 7, "u64", "1234567", "12345678");
+    let milli = string(
+        &parse_quote!(MilliString),
+        15,
+        "u128",
+        "hello world :)",
+        "goodbye world :(",
+    );
     let pretty = prettyplease::unparse(
         &syn::parse2(quote! {
             #![cfg_attr(rustfmt, rustfmt::skip)]
@@ -19,15 +25,40 @@ fn test() {
     expect_test::expect_file!["../src/generated.rs"].assert_eq(&pretty);
 }
 
-fn string(ident: &Ident, n: u8) -> TokenStream {
+fn string(ident: &Ident, n: u8, prim: &str, small: &str, big: &str) -> TokenStream {
     let err_ident = Ident::new(&format!("{ident}Error"), Span::call_site());
     let len_ident = Ident::new(&format!("{ident}Len"), Span::call_site());
     let len = len(&len_ident, n);
-    let doc = format!(" A stack-allocated string which can hold up to {n} UTF-8 encoded bytes.");
+    let struct_doc = indoc::formatdoc! {"
+        A stack-allocated string which can hold up to {n} UTF-8 encoded bytes.
+        ```
+        # use core::mem::size_of;
+        # use microstring::*;
+        assert_eq! {{
+            size_of::<{ident}>(),
+            size_of::<{prim}>(),
+        }}
+        assert_eq! {{
+            size_of::<{ident}>(),
+            size_of::<Option<{ident}>>(),
+        }}
+        ```
+    "};
+    let new_doc = indoc::formatdoc! {"
+        Returns [`None`] if the given <code>[str::len()] > {n}</code>.
+        ```
+        # use microstring::*;
+        const STRING: {ident} = {ident}::new(\"{small}\").unwrap();
+        ```
+        ```compile_fail
+        # use microstring::*;
+        const TOO_BIG: {ident} = {ident}::new(\"{big}\").unwrap();
+        ```
+    "};
     let err_msg = format!("expected a string of at most {n} bytes");
     let deser_err_msg = format!("a string of at most {n} bytes");
     quote! {
-        #[doc = #doc]
+        #[doc = #struct_doc]
         #[derive(Clone, Copy)]
         #[repr(C)]
         #[cfg_attr(feature = "zerocopy", derive(zerocopy::TryFromBytes, zerocopy::IntoBytes, zerocopy::Immutable))]
@@ -38,6 +69,7 @@ fn string(ident: &Ident, n: u8) -> TokenStream {
         impl #ident {
             pub const EMPTY: Self = Self::new("").unwrap();
 
+            #[doc = #new_doc]
             pub const fn new(s: &str) -> Option<Self> {
                 match #len_ident::from_usize(s.len()) {
                     Some(len) => {
@@ -155,6 +187,21 @@ fn string(ident: &Ident, n: u8) -> TokenStream {
         impl ::core::convert::AsRef<::std::path::Path> for #ident {
             fn as_ref(&self) -> &::std::path::Path {
                 self.as_str().as_ref()
+            }
+        }
+
+        #[cfg(feature = "alloc")]
+        impl ::core::convert::From<#ident> for ::alloc::string::String {
+            fn from(val: #ident) -> Self {
+                Self::from(val.as_str())
+            }
+        }
+
+        #[cfg(feature = "alloc")]
+        impl ::core::convert::TryFrom<::alloc::string::String> for #ident {
+            type Error = #err_ident;
+            fn try_from(value: ::alloc::string::String) -> Result<Self, #err_ident> {
+                Self::new(&value).ok_or(#err_ident)
             }
         }
 

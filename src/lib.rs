@@ -1,4 +1,14 @@
-//! Small, niche-able, stack allocated strings
+//! Small, niche-able, stack allocated strings.
+//!
+//! ```
+//! # use microstring::*;
+//! const CURRENCY: NanoString = NanoString::new("GBP").unwrap();
+//! ```
+//!
+//! ```compile_fail
+//! # use microstring::*;
+//! const TOO_BIG: NanoString = NanoString::new("GEEBEEPEE").unwrap();
+//! ```
 //!
 //! ```
 //! # use microstring::*;
@@ -11,6 +21,8 @@
 
 #![no_std]
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
 #[cfg(feature = "std")]
 extern crate std;
 

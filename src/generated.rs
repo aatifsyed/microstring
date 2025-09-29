@@ -1,5 +1,18 @@
 #![cfg_attr(rustfmt, rustfmt::skip)]
-/// A stack-allocated string which can hold up to 3 UTF-8 encoded bytes.
+/**A stack-allocated string which can hold up to 3 UTF-8 encoded bytes.
+```
+# use core::mem::size_of;
+# use microstring::*;
+assert_eq! {
+    size_of::<NanoString>(),
+    size_of::<u32>(),
+}
+assert_eq! {
+    size_of::<NanoString>(),
+    size_of::<Option<NanoString>>(),
+}
+```
+*/
 #[derive(Clone, Copy)]
 #[repr(C)]
 #[cfg_attr(
@@ -12,6 +25,16 @@ pub struct NanoString {
 }
 impl NanoString {
     pub const EMPTY: Self = Self::new("").unwrap();
+    /**Returns [`None`] if the given <code>[str::len()] > 3</code>.
+```
+# use microstring::*;
+const STRING: NanoString = NanoString::new("GBP").unwrap();
+```
+```compile_fail
+# use microstring::*;
+const TOO_BIG: NanoString = NanoString::new("GEEBEEPEE").unwrap();
+```
+*/
     pub const fn new(s: &str) -> Option<Self> {
         match NanoStringLen::from_usize(s.len()) {
             Some(len) => {
@@ -113,6 +136,19 @@ impl ::core::convert::AsRef<::std::ffi::OsStr> for NanoString {
 impl ::core::convert::AsRef<::std::path::Path> for NanoString {
     fn as_ref(&self) -> &::std::path::Path {
         self.as_str().as_ref()
+    }
+}
+#[cfg(feature = "alloc")]
+impl ::core::convert::From<NanoString> for ::alloc::string::String {
+    fn from(val: NanoString) -> Self {
+        Self::from(val.as_str())
+    }
+}
+#[cfg(feature = "alloc")]
+impl ::core::convert::TryFrom<::alloc::string::String> for NanoString {
+    type Error = NanoStringError;
+    fn try_from(value: ::alloc::string::String) -> Result<Self, NanoStringError> {
+        Self::new(&value).ok_or(NanoStringError)
     }
 }
 impl ::core::borrow::Borrow<str> for NanoString {
@@ -241,7 +277,20 @@ impl NanoStringLen {
         }
     }
 }
-/// A stack-allocated string which can hold up to 7 UTF-8 encoded bytes.
+/**A stack-allocated string which can hold up to 7 UTF-8 encoded bytes.
+```
+# use core::mem::size_of;
+# use microstring::*;
+assert_eq! {
+    size_of::<MicroString>(),
+    size_of::<u64>(),
+}
+assert_eq! {
+    size_of::<MicroString>(),
+    size_of::<Option<MicroString>>(),
+}
+```
+*/
 #[derive(Clone, Copy)]
 #[repr(C)]
 #[cfg_attr(
@@ -254,6 +303,16 @@ pub struct MicroString {
 }
 impl MicroString {
     pub const EMPTY: Self = Self::new("").unwrap();
+    /**Returns [`None`] if the given <code>[str::len()] > 7</code>.
+```
+# use microstring::*;
+const STRING: MicroString = MicroString::new("1234567").unwrap();
+```
+```compile_fail
+# use microstring::*;
+const TOO_BIG: MicroString = MicroString::new("12345678").unwrap();
+```
+*/
     pub const fn new(s: &str) -> Option<Self> {
         match MicroStringLen::from_usize(s.len()) {
             Some(len) => {
@@ -355,6 +414,19 @@ impl ::core::convert::AsRef<::std::ffi::OsStr> for MicroString {
 impl ::core::convert::AsRef<::std::path::Path> for MicroString {
     fn as_ref(&self) -> &::std::path::Path {
         self.as_str().as_ref()
+    }
+}
+#[cfg(feature = "alloc")]
+impl ::core::convert::From<MicroString> for ::alloc::string::String {
+    fn from(val: MicroString) -> Self {
+        Self::from(val.as_str())
+    }
+}
+#[cfg(feature = "alloc")]
+impl ::core::convert::TryFrom<::alloc::string::String> for MicroString {
+    type Error = MicroStringError;
+    fn try_from(value: ::alloc::string::String) -> Result<Self, MicroStringError> {
+        Self::new(&value).ok_or(MicroStringError)
     }
 }
 impl ::core::borrow::Borrow<str> for MicroString {
@@ -493,7 +565,20 @@ impl MicroStringLen {
         }
     }
 }
-/// A stack-allocated string which can hold up to 15 UTF-8 encoded bytes.
+/**A stack-allocated string which can hold up to 15 UTF-8 encoded bytes.
+```
+# use core::mem::size_of;
+# use microstring::*;
+assert_eq! {
+    size_of::<MilliString>(),
+    size_of::<u128>(),
+}
+assert_eq! {
+    size_of::<MilliString>(),
+    size_of::<Option<MilliString>>(),
+}
+```
+*/
 #[derive(Clone, Copy)]
 #[repr(C)]
 #[cfg_attr(
@@ -506,6 +591,16 @@ pub struct MilliString {
 }
 impl MilliString {
     pub const EMPTY: Self = Self::new("").unwrap();
+    /**Returns [`None`] if the given <code>[str::len()] > 15</code>.
+```
+# use microstring::*;
+const STRING: MilliString = MilliString::new("hello world :)").unwrap();
+```
+```compile_fail
+# use microstring::*;
+const TOO_BIG: MilliString = MilliString::new("goodbye world :(").unwrap();
+```
+*/
     pub const fn new(s: &str) -> Option<Self> {
         match MilliStringLen::from_usize(s.len()) {
             Some(len) => {
@@ -607,6 +702,19 @@ impl ::core::convert::AsRef<::std::ffi::OsStr> for MilliString {
 impl ::core::convert::AsRef<::std::path::Path> for MilliString {
     fn as_ref(&self) -> &::std::path::Path {
         self.as_str().as_ref()
+    }
+}
+#[cfg(feature = "alloc")]
+impl ::core::convert::From<MilliString> for ::alloc::string::String {
+    fn from(val: MilliString) -> Self {
+        Self::from(val.as_str())
+    }
+}
+#[cfg(feature = "alloc")]
+impl ::core::convert::TryFrom<::alloc::string::String> for MilliString {
+    type Error = MilliStringError;
+    fn try_from(value: ::alloc::string::String) -> Result<Self, MilliStringError> {
+        Self::new(&value).ok_or(MilliStringError)
     }
 }
 impl ::core::borrow::Borrow<str> for MilliString {
