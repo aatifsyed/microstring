@@ -13,7 +13,7 @@ assert_eq! {
 }
 ```
 */
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Eq)]
 #[repr(C)]
 #[cfg_attr(
     feature = "zerocopy",
@@ -291,7 +291,7 @@ assert_eq! {
 }
 ```
 */
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Eq)]
 #[repr(C)]
 #[cfg_attr(
     feature = "zerocopy",
@@ -579,7 +579,7 @@ assert_eq! {
 }
 ```
 */
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Eq)]
 #[repr(C)]
 #[cfg_attr(
     feature = "zerocopy",
