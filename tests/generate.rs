@@ -59,7 +59,7 @@ fn string(ident: &Ident, n: u8, prim: &str, small: &str, big: &str) -> TokenStre
     let deser_err_msg = format!("a string of at most {n} bytes");
     quote! {
         #[doc = #struct_doc]
-        #[derive(Clone, Copy)]
+        #[derive(Clone, Copy, Eq)]
         #[repr(C)]
         #[cfg_attr(feature = "zerocopy", derive(zerocopy::TryFromBytes, zerocopy::IntoBytes, zerocopy::Immutable))]
         pub struct #ident {
